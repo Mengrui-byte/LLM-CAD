@@ -1,0 +1,22 @@
+# AI CAD Architect - Dependencies
+
+# LLM Client
+openai>=1.0.0
+httpx>=0.24.0
+
+# CAD Engine
+build123d>=0.5.0
+
+# UI - Qt
+PySide6>=6.5.0
+PyQt5>=5.15.0  # Fallback
+
+# 3D Visualization
+pyvista>=0.42.0
+pyvistaqt>=0.11.0
+
+# Optional: Mesh processing
+trimesh>=4.0.0
+
+# Utilities
+numpy>=1.24.0
