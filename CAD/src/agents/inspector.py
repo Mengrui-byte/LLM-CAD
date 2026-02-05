@@ -7,10 +7,15 @@ from src.utils.renderer import render_scad
 INSPECTOR_PROMPT = """你是一个严格的模型检查员 (Inspector Agent)。
 你的任务是检查生成的 3D 模型图片 (和代码) 是否符合用户的原始需求。
 
+输入包含：
+1. 用户的原始需求。
+2. 渲染的图片 (包含坐标轴 RGB 和 网格)。
+3. 每个部件的包围盒 (Bounding Box) 范围数据。
+
 判断标准：
-1. 结构完整性：是否缺少部件？连接是否正常？
-2. 几何正确性：比例是否协调？
-3. 需求匹配度：是否实现了用户的所有要求？
+1. **连接性检查**: 检查应该连接的部件，其包围盒是否接触或重叠？(例如: Handle 的 min_x 是否接近 Cup 的 max_x)
+2. **结构完整性**: 是否缺少部件？
+3. **视觉确认**: 网格线是否显示对齐正确？(红色 X, 绿色 Y, 蓝色 Z)
 
 输出格式：
 状态: [PASS/FAIL]
@@ -34,8 +39,9 @@ class InspectorAgent:
         messages = [SystemMessage(content=INSPECTOR_PROMPT)]
         user_req = state['user_request']
         full_code = state.get('full_code', '')
+        debug_metadata = state.get('debug_metadata', {})
         
-        content = [{"type": "text", "text": f"用户原始需求: {user_req}\n生成的 OpenSCAD 代码:\n{full_code}"}]
+        content = [{"type": "text", "text": f"用户原始需求: {user_req}\n生成的 OpenSCAD 代码:\n{full_code}\n\n包围盒数据 (Metadata):\n{json.dumps(debug_metadata)}"}]
         
         if image_path:
             base64_image = self._encode_image(image_path)
